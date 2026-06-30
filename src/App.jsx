@@ -9,6 +9,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [isHovering, setIsHovering] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [currentFile, setCurrentFile] = useState(null);
   const imageRef = useRef(null);
 
   // Initialize Edge Model in the background
@@ -21,14 +22,12 @@ function App() {
     
     const url = URL.createObjectURL(file);
     setImage(url);
+    setCurrentFile(file);
     setResult(null);
     setFeedbackSent(false);
     setIsAnalyzing(true);
-
-    // Give UI time to render image before processing
-    setTimeout(() => {
-      runInference(file);
-    }, 100);
+    
+    // We will run inference when the image triggers the onLoad event
   };
 
   const runInference = async (file) => {
@@ -102,8 +101,8 @@ function App() {
       setFeedbackSent(true);
     } catch (err) {
       console.error('Feedback error:', err);
-      // Failsafe for unconfigured supabase
-      setFeedbackSent(true); 
+      alert('Error saving feedback: ' + (err.message || err.error || 'Unknown error'));
+      setFeedbackSent(false); 
     }
   };
 
@@ -162,6 +161,9 @@ function App() {
                   alt="Preview" 
                   className="preview-image" 
                   crossOrigin="anonymous"
+                  onLoad={() => {
+                    if (currentFile) runInference(currentFile);
+                  }}
                 />
               </div>
 

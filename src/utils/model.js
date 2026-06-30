@@ -1,8 +1,5 @@
 // Using window globals loaded from CDN in index.html
 // to bypass Vite/esbuild parsing bugs with TFJS ES modules.
-const tf = window.tf;
-const mobilenet = window.mobilenet;
-
 let model = null;
 let isLoading = false;
 
@@ -13,8 +10,8 @@ export async function tfjsInit() {
   try {
     // We are loading MobileNet here to simulate the lightweight edge model
     // As per the paper's recommendation for reducing latency (Limitation B)
-    await tf.ready();
-    model = await mobilenet.load({ version: 2, alpha: 1.0 });
+    await window.tf.ready();
+    model = await window.mobilenet.load({ version: 2, alpha: 1.0 });
     console.log('MobileNet model loaded successfully');
   } catch (error) {
     console.error('Error loading the model:', error);
